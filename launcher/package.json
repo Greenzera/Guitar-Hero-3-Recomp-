@@ -5,8 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "empacotar": "node empacotar.js",
-    "instalador": "node instalador.js"
+    "empacotar": "node empacotar.js"
   },
   "author": "luisxl15",
   "license": "UNLICENSED",

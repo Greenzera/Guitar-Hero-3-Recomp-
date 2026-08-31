@@ -1,38 +1,42 @@
 GUITAR HERO III: LEGENDS OF ROCK - RECOMP
 by LuisXL15
 
-COMO INSTALAR
+COMO COMECAR
 
-  1. Abra o RODAR.bat desta pasta.
-  2. Arraste para a janela o ISO do seu disco de Guitar Hero III (Xbox 360),
-     ou clique em "Escolher ISO...".
-  3. O launcher confere o disco e mostra o que encontrou. Se estiver tudo
-     certo, clique em Instalar. Sao cerca de 3,4 GB.
-  4. Quando acabar, o launcher passa sozinho para a tela de jogar.
+  1. Abra o "Guitar Hero 3 Recomp - Instalador.exe".
+     Ele descompacta em silencio e o launcher abre sozinho.
+  2. No launcher, confira a linha "Instalar em" e mude a pasta se quiser --
+     e' onde vao ficar os 3,4 GB do jogo.
+  3. Arraste o ISO do seu disco para a janela, ou clique em "Escolher ISO".
+  4. O launcher confere a versao do disco e instala.
+  5. Jogar.
+
+  Depois da primeira vez, abra sempre o launcher pelo atalho ou por
+  %LOCALAPPDATA%\Guitar Hero 3 Recomp\Guitar Hero 3 Recomp.exe
 
 O QUE PRECISA TER
 
   O ISO da SUA copia do jogo. Este pacote nao traz o jogo e nao funciona sem
-  ele. Alem disso tem de ser a mesma versao do disco de que o jogo foi
-  recompilado -- Guitar Hero III: Legends of Rock (USA), Rev 1.
+  ele. Tem de ser a mesma versao do disco de que o jogo foi recompilado --
+  Guitar Hero III: Legends of Rock (USA), Rev 1.
 
   O launcher confere o default.xex do ISO byte a byte (SHA-256) e recusa
   qualquer outra versao, antes de gastar minutos a copiar dados que nao iam
   funcionar.
 
-O QUE O LAUNCHER FAZ DEPOIS
+O QUE O LAUNCHER FAZ
 
   Idioma      liga e desliga a traducao para portugues do Brasil
   Video       renderizador (Direct3D 12 ou Vulkan), tela cheia, VSync, FPS
   DLCs        liga e desliga cada pacote que estiver em game\DLCs
-  Mods        mostra o que estiver em game\MODS
-  Atalhos     abre as pastas e o ultimo log
+  Mods        importa mods (pasta ou .zip), liga e desliga cada um
 
-ONDE FICAM AS COISAS
+MODS QUE ALTERAM O EXECUTAVEL
 
-  game\             o jogo extraido, as definicoes e o executavel
-  game\DLCs\        pacotes de musicas extra
-  game\MODS\        mods
-  game\logs\        registos de cada execucao
+  Um mod como o GH3 Deluxe traz o proprio default.xex. Um recomp so' corre o
+  codigo do executavel de que nasceu, entao esse mod precisa de um build
+  proprio -- que ja' vai neste pacote, em bin\.
 
-  Para comecar do zero, apague a pasta game\DATA e volte a por o ISO.
+  Use "Importar..." no cartao de Mods, ligue o mod, e o launcher escolhe
+  sozinho o executavel certo. Com dois mods de codigo ligados ao mesmo tempo
+  ele recusa, porque dois xex diferentes nao se combinam.

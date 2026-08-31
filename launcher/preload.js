@@ -17,6 +17,7 @@ contextBridge.exposeInMainWorld('gh3', {
   aoFecharJogo: (fn) => ipcRenderer.on('jogo-fechou', (_e, d) => fn(d)),
 
   escolherIso: () => ipcRenderer.invoke('escolher-iso'),
+  escolherPasta: () => ipcRenderer.invoke('escolher-pasta'),
   inspecionar: (caminho) => ipcRenderer.invoke('inspecionar', caminho),
   instalar: (caminho) => ipcRenderer.invoke('instalar', caminho),
   cancelar: () => ipcRenderer.invoke('cancelar'),

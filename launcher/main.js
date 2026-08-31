@@ -19,14 +19,48 @@ const modsmod = require('./mods.js');
 const RAIZ = app.isPackaged
   ? path.dirname(app.getPath('exe'))
   : path.resolve(__dirname, '..');
-const JOGO = path.join(RAIZ, 'game');
-const EXE = path.join(JOGO, 'Guitar Hero 3 Recomp.exe');
-const TOML = path.join(JOGO, 'gh3recomp.toml');
-const TOML_PADRAO = path.join(JOGO, 'gh3recomp.default.toml');
-const DLCS = path.join(JOGO, 'DLCs');
-const MODS = path.join(JOGO, 'MODS');
-const LOGS = path.join(JOGO, 'logs');
-const DESLIGADAS = path.join(DLCS, 'dlc_disabled.txt');
+// Onde ficam os 3,4 GB do jogo. Por omissao e' game/ ao lado do launcher, mas
+// o utilizador escolhe outra pasta no primeiro arranque -- por isso isto e'
+// variavel, e tudo o que depende dela recalcula-se em derivar().
+let JOGO = path.join(RAIZ, 'game');
+let EXE, TOML, TOML_PADRAO, DLCS, MODS, LOGS, DESLIGADAS, PAB;
+
+function derivar() {
+  EXE = path.join(JOGO, 'Guitar Hero 3 Recomp.exe');
+  TOML = path.join(JOGO, 'gh3recomp.toml');
+  TOML_PADRAO = path.join(JOGO, 'gh3recomp.default.toml');
+  DLCS = path.join(JOGO, 'DLCs');
+  MODS = path.join(JOGO, 'MODS');
+  LOGS = path.join(JOGO, 'logs');
+  DESLIGADAS = path.join(DLCS, 'dlc_disabled.txt');
+  PAB = path.join(JOGO, 'DATA', 'COMPRESSED', 'PAK', 'qb.pab.xen');
+}
+derivar();
+
+// A escolha fica ao lado das definicoes do utilizador, e nao ao lado do
+// executavel: instalado em Program Files, a pasta do executavel nao e' gravavel.
+function ficheiroEscolha() {
+  return path.join(app.getPath('userData'), 'launcher.json');
+}
+
+function carregarEscolha() {
+  try {
+    const d = JSON.parse(fs.readFileSync(ficheiroEscolha(), 'utf8'));
+    if (d.jogo && fs.existsSync(path.dirname(d.jogo))) {
+      JOGO = d.jogo;
+      derivar();
+    }
+  } catch {
+    /* primeira vez, ou ficheiro estragado: fica o valor por omissao */
+  }
+}
+
+function gravarEscolha() {
+  try {
+    fs.mkdirSync(path.dirname(ficheiroEscolha()), { recursive: true });
+    fs.writeFileSync(ficheiroEscolha(), JSON.stringify({ jogo: JOGO }, null, 2));
+  } catch {}
+}
 // No pacote as ferramentas vao em tools/; no projeto vivem em gh3recomp/tools.
 const FERRAMENTAS = fs.existsSync(path.join(RAIZ, 'tools', 'traduzir_ptbr.py'))
   ? path.join(RAIZ, 'tools')
@@ -35,7 +69,6 @@ const FERRAMENTAS = fs.existsSync(path.join(RAIZ, 'tools', 'traduzir_ptbr.py'))
 const BUILDS_PACOTE = path.join(RAIZ, 'bin');
 const BUILDS_PROJETO = path.join(RAIZ, 'gh3recomp', 'out', 'build');
 const TRADUTOR = path.join(FERRAMENTAS, 'traduzir_ptbr.py');
-const PAB = path.join(JOGO, 'DATA', 'COMPRESSED', 'PAK', 'qb.pab.xen');
 
 // Frase que so' existe no arquivo depois de a traducao entrar. Serve de
 // sonda: e' mais honesto do que guardar um sinalizador que pode dessincronizar.
@@ -163,6 +196,7 @@ async function estado() {
   const escolha = await escolherBuild();
   return {
     instalado: v.ok,
+    pastaJogo: JOGO,
     build: escolha.build ? escolha.build.nome : null,
     buildNota: escolha.nota,
     buildAviso: escolha.aviso,
@@ -274,6 +308,24 @@ ipcMain.handle('escolher-iso', async () => {
     properties: ['openFile'],
   });
   return r.canceled ? null : r.filePaths[0];
+});
+
+ipcMain.handle('escolher-pasta', async () => {
+  const r = await dialog.showOpenDialog(janela, {
+    title: 'Onde quer instalar o jogo',
+    defaultPath: path.dirname(JOGO),
+    properties: ['openDirectory', 'createDirectory'],
+  });
+  if (r.canceled) return { ok: false, cancelado: true };
+  // Se a pasta escolhida ja' se chama "game", usa-se tal e qual; senao cria-se
+  // uma subpasta, para nao espalhar 3,4 GB no meio das coisas do utilizador.
+  const escolhida = r.filePaths[0];
+  JOGO = path.basename(escolhida).toLowerCase() === 'game'
+    ? escolhida
+    : path.join(escolhida, 'Guitar Hero 3 Recomp', 'game');
+  derivar();
+  gravarEscolha();
+  return { ok: true, pasta: JOGO };
 });
 
 ipcMain.handle('inspecionar', (_e, caminho) => {
@@ -418,7 +470,10 @@ function criarJanela() {
   janela.on('closed', () => (janela = null));
 }
 
-app.whenReady().then(criarJanela);
+app.whenReady().then(() => {
+  carregarEscolha();
+  criarJanela();
+});
 app.on('window-all-closed', () => app.quit());
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) criarJanela();

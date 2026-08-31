@@ -34,11 +34,13 @@ versão o jogo não arranca.
 
 ## Como jogar
 
-1. Abra o `launcher/RODAR.bat`.
-2. Arraste o seu ISO para a janela, ou clique em **Escolher ISO**.
-3. O launcher lê o disco, confere a versão e mostra o que encontrou.
-4. **Instalar** — são cerca de 3,4 GB.
-5. **Jogar**.
+1. Abra o `Guitar Hero 3 Recomp.exe` (ou `launcher/RODAR.bat`, a partir do
+   código).
+2. Confira a linha **Instalar em** e mude a pasta se quiser — é onde vão os
+   3,4 GB do jogo.
+3. Arraste o seu ISO para a janela, ou clique em **Escolher ISO**.
+4. O launcher lê o disco, confere a versão e mostra o que encontrou.
+5. **Instalar**, e depois **Jogar**.
 
 | Sem o jogo instalado | Durante a instalação |
 |---|---|
@@ -123,18 +125,9 @@ do Electron, o jogo recompilado em `game/`, os builds de variante em `bin/`, e
 as ferramentas da tradução em `tools/`. Nada de rede nem de electron-builder —
 o Electron já está em `node_modules` e empacotar é copiá-lo e renomear.
 
-Para um instalador de ficheiro único:
-
-```bash
-npm run instalador
-```
-
-Sai um `.exe` auto-extraível de ~110 MB: quem o abre escolhe a pasta e, quando
-acaba, o launcher arranca sozinho. O diálogo leva o ícone e o logo do projeto,
-para não ter cara de ferramenta de compressão.
-
-Não há uma instalação separada do jogo: **quem instala é o launcher**, a partir
-do ISO, no primeiro arranque.
+Não há instalador separado: a pasta que sai de `dist/` **é** o programa, e
+quem instala o jogo é o próprio launcher. Quem a recebe abre o
+`Guitar Hero 3 Recomp.exe`, escolhe ali onde quer o jogo, e aponta o ISO.
 
 O `default.xex` **não** vai no pacote, e não faz falta: o do jogo base sai do
 seu ISO durante a instalação, e o do GH3 Deluxe vem dentro do próprio mod — a

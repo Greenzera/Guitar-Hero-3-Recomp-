@@ -157,7 +157,10 @@ function desenhar() {
   // Sem o jogo instalado nao ha nada para configurar: mostra-se o instalador.
   $('#vista-instalar').hidden = estado.instalado;
   $('#vista-jogar').hidden = !estado.instalado;
-  if (!estado.instalado) return;
+  if (!estado.instalado) {
+    $('#destino-caminho').textContent = estado.pastaJogo;
+    return;
+  }
   desenharMarcadores();
   desenharTraducao();
   desenharVideo();
@@ -361,6 +364,14 @@ $('#btn-outro').addEventListener('click', async () => {
   if (c) verificarIso(c);
   else passo('iso');
 });
+$('#btn-pasta').addEventListener('click', async () => {
+  const r = await window.gh3.escolherPasta();
+  if (!r.ok) return;
+  estado.pastaJogo = r.pasta;
+  $('#destino-caminho').textContent = r.pasta;
+  brinde('O jogo vai para ' + r.pasta);
+});
+
 $('#btn-instalar').addEventListener('click', instalar);
 $('#btn-recomecar').addEventListener('click', () => passo('iso'));
 $('#btn-cancelar').addEventListener('click', async () => {
