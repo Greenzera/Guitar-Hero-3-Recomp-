@@ -129,8 +129,12 @@ Para um instalador de ficheiro único:
 npm run instalador
 ```
 
-Sai um `.exe` auto-extraível: quem o abre escolhe a pasta, e no fim o launcher
-arranca sozinho.
+Sai um `.exe` auto-extraível de ~110 MB: quem o abre escolhe a pasta e, quando
+acaba, o launcher arranca sozinho. O diálogo leva o ícone e o logo do projeto,
+para não ter cara de ferramenta de compressão.
+
+Não há uma instalação separada do jogo: **quem instala é o launcher**, a partir
+do ISO, no primeiro arranque.
 
 O `default.xex` **não** vai no pacote, e não faz falta: o do jogo base sai do
 seu ISO durante a instalação, e o do GH3 Deluxe vem dentro do próprio mod — a

@@ -18,6 +18,8 @@ const SAIDA = path.join(RAIZ, 'dist', 'Guitar Hero 3 Recomp - Instalador.exe');
 
 const RAR = ['C:/Program Files/WinRAR/Rar.exe', 'C:/Program Files (x86)/WinRAR/Rar.exe']
   .find((p) => fs.existsSync(p));
+const ICONE = path.join(__dirname, 'assets', 'icone.ico');
+const LOGO = path.join(__dirname, 'assets', 'sfx-logo.bmp');
 
 if (!RAR) {
   console.error('Nao encontrei o Rar.exe do WinRAR. Sem ele nao da' + "'" + ' para fazer o .exe unico.');
@@ -38,12 +40,10 @@ const CONFIG = [
   'Title=Guitar Hero 3 Recomp',
   'Text',
   '{',
-  'Guitar Hero III: Legends of Rock - Recomp',
+  'Escolha onde por o jogo. Quando acabar, o launcher abre',
+  'sozinho e pede o ISO do seu disco (USA, Rev 1).',
   '',
-  'Escolha a pasta e clique em Instalar.',
-  '',
-  'O jogo NAO vem incluido: depois de instalar, o launcher',
-  'pede o ISO do seu disco (USA, Rev 1) e trata do resto.',
+  'O jogo nao vem incluido neste ficheiro.',
   '}',
   '',
 ].join('\r\n');
@@ -63,6 +63,10 @@ try {
     '-m3',          // compressao normal: o bom compromisso para 400 MB
     '-z' + comentario,
     '-idq',         // calado
+    // marca o dialogo com o icone e o logo do projeto, para nao ter cara de
+    // ferramenta de compressao
+    ...(fs.existsSync(ICONE) ? ['-iicon' + ICONE] : []),
+    ...(fs.existsSync(LOGO) ? ['-iimg' + LOGO] : []),
     SAIDA,
     path.join(PASTA, '*'),
   ], { stdio: 'inherit' });
