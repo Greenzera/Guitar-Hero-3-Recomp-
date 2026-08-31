@@ -1,0 +1,140 @@
+# Valores de FABRICA do gh3.exe.
+#
+# Este ficheiro NAO e o que o jogo le em cada arranque. O 2-BUILD.bat copia-o
+# para junto do exe como gh3.default.toml, e o Gh3App::OnConfigurePaths usa-o
+# apenas para semear as definicoes do utilizador na primeira execucao:
+#
+#   config/gh3.toml  --(build)-->  out/build/.../gh3.default.toml
+#                                        |
+#                                        | (so se ainda nao existir)
+#                                        v
+#                              Documentos\gh3\gh3.toml   <- LIDO E GRAVADO
+#
+# E ai que o botao "Save to config" do menu F4 escreve, e por isso as tuas
+# definicoes sobrevivem a rebuilds. Antes nao sobreviviam: o jogo lia de
+# exe_dir/gh3.toml, que o build sobrescrevia a cada vez.
+#
+# Para repor tudo de fabrica: apaga Documentos\gh3\gh3.toml e reabre o jogo.
+# Para mudar os valores de fabrica: edita este ficheiro (e apaga o do
+# utilizador, senao continua a mandar o que ja esta gravado).
+#
+# TECLAS DE OVERLAY (registadas pelo SDK, e uma nossa):
+#   F3   estatisticas de debug
+#   F4   MENU DE DEFINICOES (so rato -- ver nota do F9 mais abaixo)
+#   F7   achievements
+#   F9   liga/desliga o teclado-como-comando, libertando o rato  <- nossa
+#   `    consola; aceita "<cvar> <valor>", ex.: mnk_mode false
+
+# O 0.9.0 tirou a emulacao de GPU do runtime e po-la num plugin carregavel.
+# Sem isto, todas as chamadas de kernel Vd* sao ignoradas
+# ("no GPU emulation loaded (gpu_plugin not set)"), o ring buffer nunca
+# inicializa e o jogo rebenta na inicializacao grafica.
+# Ter o rexgpu-xenos.dll ao lado do exe NAO chega -- e preciso seleciona-lo aqui.
+gpu_plugin = "xenos"
+
+# Verboso de proposito nesta fase: o que interessa agora e apanhar
+# "Call to invalid or unregistered function at guest address 0x..." (funcao orfa
+# que falta nos hints) e chamadas de kernel por implementar.
+log_verbose = true
+log_level = "debug"
+
+fullscreen = false
+window_width = 1280
+window_height = 720
+vsync = true
+
+# ---------------------------------------------------------------------------
+# TECLADO -- TEMPORARIO, so para confirmar que se chega ao jogo
+# ---------------------------------------------------------------------------
+# Nao foi preciso escrever codigo nenhum: o SDK ja traz um driver completo de
+# teclado/rato (src/input/mnk/), apenas desligado por omissao. Isto so o liga e
+# remapeia as teclas. O driver emula um comando Xbox 360, e o jogo nunca sabe
+# que ha um teclado -- ve so um gamepad.
+#
+# NAO e suporte a guitarra. Serve para navegar menus e ver se o jogo entra numa
+# musica. Para jogar a serio faltam a guitarra USB/Bluetooth e a calibracao de
+# latencia, que sao a etapa 2 do plano.
+#
+# ATENCAO ao efeito no rato: com isto ligado, o driver usa o rato como stick
+# direito, e para isso esconde o cursor e captura-o. O menu F4 e so-rato, por
+# isso abre mas nao da para clicar. Carrega em F9 para desligar isto e
+# recuperar o cursor; F9 outra vez para voltar a jogar com o teclado.
+mnk_mode = true
+mnk_user_index = 0
+
+# Trastes ao estilo Clone Hero / Frets on Fire: 1..5 da esquerda para a direita.
+# O mapeamento traste->botao segue o esquema do GH3 em comando normal.
+keybind_a = "1"               # verde   (e "confirmar" nos menus)
+keybind_b = "2"               # vermelho (e "voltar" nos menus)
+keybind_y = "3"               # amarelo
+keybind_x = "4"               # azul
+keybind_left_shoulder = "5"   # laranja
+
+# Palheta e navegacao. Ficam nos valores de fabrica, que ja servem:
+#   Cima/Baixo = palhetar e mover no menu
+#   Esquerda/Direita = mover no menu
+keybind_dpad_up = "Up"
+keybind_dpad_down = "Down"
+keybind_dpad_left = "Left"
+keybind_dpad_right = "Right"
+
+keybind_start = "Return"      # Start: avancar ecras e pausar
+keybind_back = "Tab"          # Back/Select
+
+# Atencao: ao pôr o A no "1", o Space deixa de confirmar nos menus. Se algum
+# ecra nao reagir, tenta 1, Return e as setas antes de assumir que esta preso.
+#
+# Todas estas chaves sao cvars do SDK; podes mexer-lhes sem recompilar nada,
+# basta reabrir o jogo.
+
+# ---------------------------------------------------------------------------
+# CORES DO MENU DE DEFINICOES (so no ramo 081)
+# ---------------------------------------------------------------------------
+# O menu vem com o esquema afinado para o Skate 3: lima, magenta e paineis
+# verde-azulado. Estes cvars trocam-no por uma paleta
+# de PRETO, BRANCO e DOURADO: paineis pretos translucidos, linhas brancas
+# (inalteradas) e dourado nos destaques.
+#
+# Formato RRGGBB ou RRGGBBAA (os dois ultimos digitos sao a transparencia; os
+# paineis usam-na para deixar ver o jogo por tras).
+#
+# Ficarem VAZIOS repoe o esquema original -- e e por isso que o Skate 3, que
+# nao os define, continua exatamente com o aspeto de antes.
+ui_theme_accent = "D4A72C"    # laranja de chama: barras e anel de foco
+ui_theme_accent_dark = "0A0A0A"    # texto sobre o laranja
+ui_theme_interact = "C9992E"    # vermelho: setas e controlos
+ui_theme_interact_hover = "F0CE5A"    # vermelho claro sob o rato
+ui_theme_rail = "0A0A0AC8"  # barra de categorias, castanho escuro
+ui_theme_rail_hover = "1F1F1FD9"  # a mesma, realcada
+ui_theme_desc = "0A0A0AC8"  # painel de descricao
+
+# ---------------------------------------------------------------------------
+# FSR (so no ramo 081, e so se o build apontar para os headers do FidelityFX)
+# ---------------------------------------------------------------------------
+# O reescalador do rexglue ja estava implementado; faltava compilar com o SDK
+# da AMD. Sem isso o unico valor aceite e "bilinear".
+#
+# Modos: bilinear | cas | fsr | fsr2 | fsr3
+#   fsr  = EASU espacial. E o que interessa aqui: renderiza a Render Scale
+#          (720p) e sobe para a Output Resolution com qualidade muito acima do
+#          bilinear. Arestas de alto contraste -- a autoestrada de notas -- e
+#          exatamente onde o EASU brilha.
+#   cas  = so nitidez, sem reescalar.
+#   fsr2/fsr3 = temporais. NAO recomendados aqui: um jogo do 360 emulado nao
+#          fornece motion vectors nem depth reais, o SDK sintetiza-os e avisa
+#          que pode cair de volta para o espacial. Num jogo de ritmo isso
+#          arrisca artefactos nas notas, que e o que estas a olhar.
+#
+# ATENCAO: todos estes cvars sao kRequiresRestart -- mudar exige reabrir o jogo.
+present_effect = "fsr"
+present_fsr_sharpness_reduction = 0.2   # menos = mais nitido
+
+# ---------------------------------------------------------------------------
+# MODS
+# ---------------------------------------------------------------------------
+# Pasta de mods, aplicada por cima dos dados do jogo (cada subpasta e uma
+# camada). Presente em TODAS as builds -- ate a base aplica mods de dados.
+mods_root = 'C:/Users/Luis/Desktop/GUITAR HERO 3 RECOMP/mods'
+# mods_allow_xex fica de FORA aqui de proposito: so a variante recompilada de um
+# mod (build-081-dx e as do GH3 Mod Recompiler) o liga, porque so essa pode
+# servir o xex do mod sem crashar. O launcher escolhe a build certa por hash.

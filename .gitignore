@@ -1,0 +1,45 @@
+# ---------------------------------------------------------------------------
+# Nada que venha do disco do jogo entra aqui. Este projeto e' codigo; os dados
+# sao de quem tem o jogo.
+# ---------------------------------------------------------------------------
+game/
+extracted/
+extracted-dx/
+*.iso
+*.xex
+*.xen
+
+# Codigo C++ gerado pelo recompilador a partir do executavel do jogo.
+# Regenera-se com o codegen; nao se publica.
+generated/
+
+# Builds
+out/
+build/
+cmake-build-*/
+CMakeUserPresets.json
+android/app/build/
+android/.gradle/
+android/local.properties
+android/app/src/main/jniLibs/
+*.so
+*.dll
+*.exe
+*.lib
+*.apk
+
+# Ferramentas empacotadas
+tools/recompiler/build/
+tools/recompiler/dist/
+
+# Node
+node_modules/
+package-lock.json
+
+# Python
+__pycache__/
+*.pyc
+
+# Registos e coisas soltas
+*.log
+logs/

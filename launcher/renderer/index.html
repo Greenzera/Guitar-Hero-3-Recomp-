@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'">
+<title>Guitar Hero 3 Recomp</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="fundo"><img src="../assets/bg.jpg" alt=""></div>
+<div class="veu"></div>
+<div class="grao" aria-hidden="true"></div>
+
+<header class="barra">
+  <div class="semaforo">
+    <button class="luz fechar" data-janela="fechar" title="Fechar" aria-label="Fechar"></button>
+    <button class="luz minimizar" data-janela="minimizar" title="Minimizar" aria-label="Minimizar"></button>
+    <button class="luz ampliar" data-janela="maximizar" title="Ampliar" aria-label="Ampliar"></button>
+  </div>
+  <div class="titulo-barra">Guitar Hero 3 Recomp</div>
+</header>
+
+<section class="instalador" id="vista-instalar" hidden>
+  <img class="logo logo-instalador" src="../assets/logo.png" alt="Guitar Hero III Legends of Rock — Recomp">
+
+  <div class="passo" id="passo-iso">
+    <div class="alvo" id="alvo">
+      <div class="disco" aria-hidden="true"><span></span></div>
+      <p class="alvo-titulo">Arraste para aqui o ISO do seu disco</p>
+      <p class="alvo-nota">Guitar Hero III: Legends of Rock &middot; Xbox 360 &middot; USA, Rev 1</p>
+      <button class="pilula grande" id="btn-escolher">Escolher ISO…</button>
+    </div>
+    <p class="rodape-instalador">Este pacote não traz o jogo. É preciso o ISO da sua própria cópia,
+      e tem de ser esta versão do disco — é dela que o jogo foi recompilado.</p>
+  </div>
+
+  <div class="passo" id="passo-verificar" hidden>
+    <div class="pulso" aria-hidden="true"></div>
+    <p class="passo-titulo">A conferir o disco…</p>
+    <p class="passo-nota" id="nota-verificar">A ler o sistema de ficheiros e a somar o default.xex.</p>
+  </div>
+
+  <div class="passo" id="passo-confirmar" hidden>
+    <p class="passo-titulo">Disco reconhecido</p>
+    <div class="ficha" id="ficha"></div>
+    <div class="botoes">
+      <button class="botao-jogar" id="btn-instalar"><span class="rotulo">Instalar</span></button>
+      <button class="pilula" id="btn-outro">Escolher outro</button>
+    </div>
+  </div>
+
+  <div class="passo" id="passo-extrair" hidden>
+    <p class="passo-titulo" id="titulo-extrair">A instalar…</p>
+    <div class="barra-progresso"><div class="barra-cheia" id="barra-cheia"></div></div>
+    <div class="progresso-info">
+      <span id="progresso-pct">0%</span>
+      <span id="progresso-gb">0 / 3,4 GB</span>
+      <span id="progresso-eta"></span>
+    </div>
+    <p class="passo-nota ficheiro-atual" id="ficheiro-atual">&nbsp;</p>
+    <button class="pilula" id="btn-cancelar">Cancelar</button>
+  </div>
+
+  <div class="passo" id="passo-erro" hidden>
+    <p class="passo-titulo erro">Não deu para instalar</p>
+    <p class="passo-nota" id="texto-erro"></p>
+    <button class="pilula" id="btn-recomecar">Tentar outro ISO</button>
+  </div>
+</section>
+
+<main class="palco" id="vista-jogar" hidden>
+
+  <section class="heroi">
+    <img class="logo" src="../assets/logo.png" alt="Guitar Hero III Legends of Rock — Recomp">
+
+    <div class="acao">
+      <button id="jogar" class="botao-jogar">
+        <span class="rotulo">Jogar</span>
+        <span class="girando" aria-hidden="true"></span>
+      </button>
+      <p id="recado" class="recado">Recompilado do Xbox 360 &middot; nativo em PC</p>
+    </div>
+
+    <div class="marcadores">
+      <div class="marcador"><span class="valor" id="m-backend">—</span><span class="chave">Renderizador</span></div>
+      <div class="marcador"><span class="valor" id="m-idioma">—</span><span class="chave">Idioma</span></div>
+      <div class="marcador"><span class="valor" id="m-dlcs">—</span><span class="chave">DLCs ativas</span></div>
+      <div class="marcador"><span class="valor" id="m-mods">—</span><span class="chave">Mods</span></div>
+    </div>
+  </section>
+
+  <aside class="painel">
+    <div class="painel-interior">
+
+      <section class="cartao">
+        <h2>Idioma</h2>
+        <div class="linha">
+          <div class="texto">
+            <span class="nome">Português do Brasil</span>
+            <span class="nota" id="nota-traducao">a verificar…</span>
+          </div>
+          <button class="interruptor" id="sw-traducao" role="switch" aria-checked="false" aria-label="Tradução em português"><span></span></button>
+        </div>
+      </section>
+
+      <section class="cartao">
+        <h2>Vídeo</h2>
+        <div class="linha">
+          <div class="texto"><span class="nome">Renderizador</span></div>
+          <div class="segmentado" id="seg-backend" role="radiogroup" aria-label="Renderizador">
+            <div class="polegar"></div>
+            <button data-valor="d3d12" role="radio" aria-checked="false">D3D12</button>
+            <button data-valor="vulkan" role="radio" aria-checked="false">Vulkan</button>
+          </div>
+        </div>
+        <div class="separador"></div>
+        <div class="linha">
+          <div class="texto"><span class="nome">Tela cheia</span></div>
+          <button class="interruptor" data-config="fullscreen" role="switch" aria-checked="false" aria-label="Tela cheia"><span></span></button>
+        </div>
+        <div class="separador"></div>
+        <div class="linha">
+          <div class="texto"><span class="nome">VSync</span></div>
+          <button class="interruptor" data-config="vsync" role="switch" aria-checked="false" aria-label="VSync"><span></span></button>
+        </div>
+        <div class="separador"></div>
+        <div class="linha">
+          <div class="texto"><span class="nome">Contador de FPS</span></div>
+          <button class="interruptor" data-config="show_fps_counter" role="switch" aria-checked="false" aria-label="Contador de FPS"><span></span></button>
+        </div>
+      </section>
+
+      <section class="cartao">
+        <h2>DLCs <button class="link" data-abrir="dlcs">Abrir pasta</button></h2>
+        <div id="lista-dlcs" class="lista"></div>
+      </section>
+
+      <section class="cartao">
+        <h2>Mods <button class="link" data-abrir="mods">Abrir pasta</button></h2>
+        <div id="lista-mods" class="lista"></div>
+      </section>
+
+      <section class="cartao">
+        <h2>Atalhos</h2>
+        <div class="atalhos">
+          <button class="pilula" data-abrir="jogo">Pasta do jogo</button>
+          <button class="pilula" id="btn-log">Último log</button>
+          <button class="pilula" data-abrir="raiz">Pasta raiz</button>
+        </div>
+      </section>
+
+    </div>
+  </aside>
+
+</main>
+
+<div id="brinde" class="brinde" role="status" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

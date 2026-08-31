@@ -1,0 +1,38 @@
+GUITAR HERO III: LEGENDS OF ROCK - RECOMP
+by LuisXL15
+
+COMO INSTALAR
+
+  1. Abra o RODAR.bat desta pasta.
+  2. Arraste para a janela o ISO do seu disco de Guitar Hero III (Xbox 360),
+     ou clique em "Escolher ISO...".
+  3. O launcher confere o disco e mostra o que encontrou. Se estiver tudo
+     certo, clique em Instalar. Sao cerca de 3,4 GB.
+  4. Quando acabar, o launcher passa sozinho para a tela de jogar.
+
+O QUE PRECISA TER
+
+  O ISO da SUA copia do jogo. Este pacote nao traz o jogo e nao funciona sem
+  ele. Alem disso tem de ser a mesma versao do disco de que o jogo foi
+  recompilado -- Guitar Hero III: Legends of Rock (USA), Rev 1.
+
+  O launcher confere o default.xex do ISO byte a byte (SHA-256) e recusa
+  qualquer outra versao, antes de gastar minutos a copiar dados que nao iam
+  funcionar.
+
+O QUE O LAUNCHER FAZ DEPOIS
+
+  Idioma      liga e desliga a traducao para portugues do Brasil
+  Video       renderizador (Direct3D 12 ou Vulkan), tela cheia, VSync, FPS
+  DLCs        liga e desliga cada pacote que estiver em game\DLCs
+  Mods        mostra o que estiver em game\MODS
+  Atalhos     abre as pastas e o ultimo log
+
+ONDE FICAM AS COISAS
+
+  game\             o jogo extraido, as definicoes e o executavel
+  game\DLCs\        pacotes de musicas extra
+  game\MODS\        mods
+  game\logs\        registos de cada execucao
+
+  Para comecar do zero, apague a pasta game\DATA e volte a por o ISO.

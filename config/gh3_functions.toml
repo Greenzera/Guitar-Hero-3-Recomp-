@@ -1,0 +1,89 @@
+# Fronteiras de funcao para o codegen do Guitar Hero III (imagem base, sem TU).
+#
+# Sao os 10 erros UnresolvedCall da ronda 1 (9 alvos distintos -- 0x8233E858
+# aparece duas vezes, chamado de 0x821CF91C e 0x821CF938).
+#
+# Todas estas rotinas sao alcancadas apenas por tail call e nao constam do
+# PDATA, por isso o rexglue nao lhes descobre o inicio sozinho. Nao e sinal de
+# dump corrompido: e como o jogo foi compilado.
+#
+# 'end' e EXCLUSIVO (end = address + size) e nao pode coexistir com 'size' --
+# ver rexglue-sdk-090/src/codegen/config.cpp:201-209.
+#
+# Cada fronteira foi obtida com:
+#     python tools/xex_image.py ../extracted/default.xex --sweep <addr>
+# que desencripta a imagem (AES-128, chave de sessao d4ef256c...) e varre da
+# entrada ate ao terminador, passando por cima de terminadores que um ramo
+# condicional anterior salte.
+
+[functions]
+
+# --- tabela de thunks, 4 instrucoes cada, espacadas 16 bytes -----------------
+# Padrao identico nas quatro: carregam um ponteiro e saltam com bctr. Tem todo
+# o aspeto de despacho por vtable/import.
+"0x8232FDB0" = { end = 0x8232FDC0 }  # 4 instrucoes, termina em bctr
+"0x8232FDC0" = { end = 0x8232FDD0 }  # 4 instrucoes, termina em bctr
+"0x8232FDD0" = { end = 0x8232FDE0 }  # 4 instrucoes, termina em bctr
+"0x8232FE90" = { end = 0x8232FEA0 }  # 4 instrucoes, termina em bctr
+
+# --- wrappers minimos, ambos com tail call para a MESMA rotina --------------
+"0x827A6C08" = { end = 0x827A6C10 }  # 2 instrucoes, tail call -> 0x82799DD0
+"0x8279C110" = { end = 0x8279C118 }  # 2 instrucoes, tail call -> 0x82799DD0
+
+# --- rotinas curtas ---------------------------------------------------------
+"0x8233E858" = { end = 0x8233E870 }  # 6 instrucoes, termina em blr
+"0x8236D0D8" = { end = 0x8236D0EC }  # 5 instrucoes, tail call -> 0x82415C78
+
+# --- ronda 2: orfa encontrada em RUNTIME, nao no codegen ---------------------
+# O codegen passou sem a reportar (nada lhe salta para la de forma estatica),
+# mas o jogo bateu nela a arrancar:
+#   [FATAL] Call to invalid or unregistered function at guest address 0x827C6AC8
+# Chamada por ponteiro a partir do caminho de audio -- dai a analise estatica
+# nao a apanhar.
+#
+# Nota sobre a varredura: ha um blr em 0x827C6AE8, mas o ramo condicional em
+# 0x827C6ADC salta por cima dele (para 0x827C6AEC), por isso a funcao continua
+# ate ao bctr em 0x827C6B0C. Monta 0x80070057 (E_INVALIDARG) no caminho curto.
+"0x827C6AC8" = { end = 0x827C6B10 }  # 18 instrucoes, termina em bctr
+
+# --- ronda 3: orfas encontradas por varrimento, ANTES de o jogo bater nelas --
+# Achadas com tools/find_orphans.py, que procura ponteiros para a regiao de
+# codigo dentro das regioes de DADOS e cruza com as 59.484 funcoes ja emitidas.
+#
+# Dos 118 candidatos plausiveis, so estao aqui os 9 com DUAS OU MAIS
+# referencias. Referencia unica e sinal fraco (pode ser coincidencia de bytes)
+# e nao vale o risco de declarar como funcao algo que e miolo de outra; esses
+# ficam para tratamento reativo, se o jogo la bater.
+#
+# Validacao do metodo: o 0x826E0588 abaixo era precisamente a orfa que estava a
+# matar o arranque, e o varrimento encontrou-a sozinho, com 11 referencias.
+"0x821F31F8" = { end = 0x821F31FC }  # 1 instr, blr   -- stub vazio, 50 refs
+"0x823F3BA8" = { end = 0x823F3BFC }  # 21 instr, bctr -- despacho, 86 refs
+"0x826E0588" = { end = 0x826E0600 }  # 30 instr, blr  -- o FATAL da ronda 2, 11 refs
+"0x827C6B10" = { end = 0x827C6B48 }  # 14 instr, blr  -- vizinha da 0x827C6AC8, 5 refs
+"0x82208160" = { end = 0x82208168 }  # 2 instr, tail call, 3 refs
+"0x82746A08" = { end = 0x82746A48 }  # 16 instr, tail call, 3 refs
+"0x82311930" = { end = 0x82311934 }  # 1 instr, tail call, 2 refs
+"0x8233B0B8" = { end = 0x8233B0BC }  # 1 instr, blr, 2 refs
+"0x8237A018" = { end = 0x8237A024 }  # 3 instr, blr, 2 refs
+
+# --- ronda 4: consequencia de um truncamento --------------------------------
+# Ao resolver sobreposicoes, o 0x824317EC foi cortado de 0x82431D2C para
+# 0x824319DC, e o 0x824319DC acaba em 0x82431AE8. Isso deixou este terceiro
+# ponto de entrada do mesmo bloco a descoberto, e o Validate apanhou-o:
+#   0x82431B1C from 0x824319C4 - target not in any function
+# Nao se sobrepoe a nenhum dos vizinhos (ha uma folga 0x82431AE8-0x82431B1C).
+"0x82431B1C" = { end = 0x82431D2C }  # 132 instrucoes, tail call -> 0x824317D4
+
+# --- ronda 5: so aparece com comando ligado ---------------------------------
+# O varrimento nao a propoe (nao ha ponteiro para ela nas regioes de dados) e o
+# jogo so la chega depois de ver um comando na slot 0, ja passado o carregamento
+# de saves. Com mnk_mode=false o codigo nunca era alcancado.
+"0x825E9B20" = { end = 0x825E9B44 }  # 9 instrucoes, termina em bctr
+
+# --- bloco de comparacao/laco, o unico grande -------------------------------
+# Comeca em rlwinm/cmpli/bc (sem prologo: e um alvo de salto, nao uma funcao
+# chamada com bl). Termina em 'b 0x8211904C', um ramo para tras do laco.
+# A fronteira esta confirmada de forma independente: em 0x821190B8 esta
+# 7D8802A6 = mflr r12, ou seja o prologo da funcao seguinte comeca ali.
+"0x82118F94" = { end = 0x821190B8 }  # 73 instrucoes

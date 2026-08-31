@@ -1,0 +1,117 @@
+# Valores de FABRICA da build ANDROID (arm64-v8a).
+#
+# O build escreve isto em out/build/android-arm64/gh3recomp.default.toml. Vai
+# junto com os dados do jogo:
+#
+#   adb push <build>/gh3recomp.default.toml /sdcard/gh3/
+#
+# O Gh3App::OnConfigurePaths semeia dele o /sdcard/gh3/gh3recomp.toml na
+# primeira execucao -- e esse que o jogo le e onde o menu de definicoes grava.
+# Para repor de fabrica: apagar /sdcard/gh3/gh3recomp.toml e reabrir.
+#
+# Porque e um ficheiro separado do config/gh3.toml do PC: praticamente tudo o
+# que la esta e' especifico de desktop (teclado como comando, caminho de mods em
+# C:\, plugin de GPU do ramo 090, FSR com o SDK da AMD que a build Android nao
+# compila). Manter um so ficheiro com condicoes espalhadas era pior.
+
+# ---------------------------------------------------------------------------
+# Onde estao os dados
+# ---------------------------------------------------------------------------
+# Deixado a criterio do codigo: o Gh3App::OnConfigurePaths procura
+# /storage/emulated/0/gh3/game (e /sdcard/gh3/game) e, faltando esses, a pasta
+# externa da app. Descomentar so para forcar outro sitio.
+# game_data_root = "/storage/emulated/0/gh3/game"
+
+# ---------------------------------------------------------------------------
+# Video
+# ---------------------------------------------------------------------------
+# O tamanho da janela nao se aplica: a surface e o ecra todo. Fullscreen fica
+# ligado para nao haver barra de estado por cima da autoestrada.
+fullscreen = true
+vsync = true
+
+# NAO ha gpu_plugin aqui: esse cvar so existe no ramo 0.9.0, que tirou a
+# emulacao de GPU para um plugin DLL. O ramo 081 -- o unico que compila para
+# Android -- traz a emulacao embutida e Vulkan como unico backend.
+
+# Compilacao sincrona de shaders. Esta e A definicao que decide entre ver o
+# jogo e ver preto: com a compilacao assincrona os frames desenham com
+# pipelines de substituicao e o presenter descarta-os, e numa GPU movel a
+# compilacao e lenta o suficiente para que praticamente TODOS os frames sejam
+# descartados -- ecra preto permanente com o jogo a correr por tras.
+# (Diagnosticado no port Android do Skate 3, mesmo SDK.)
+async_shader_compilation = false
+vulkan_async_skip_incomplete_frames = false
+store_shaders = true
+
+# Custo de GPU: nada disto e preciso para validar o port, e MSAA e
+# pos-processamento sao caros num GPU de tiles.
+anisotropic_override = 1
+occlusion_query_enable = false
+
+# Escala de rasterizacao a 1x (o valor de fabrica do rexglue e 2x).
+#
+# Duas razoes. A obvia: 2x num telemovel e renderizar 2560x1440 para mostrar
+# 1280x720, que nenhum GPU movel absorve.
+#
+# A outra apareceu no bring-up (22/08/2026): com 2x, o parser de pacotes da GPU
+# acabava sempre por ler lixo do ring buffer indireto -- ora
+# "ExecutePacketType0 overflow", ora "Unimplemented GPU OPCODE: 0x1F" -- e a
+# thread da GPU morria, congelando a imagem no ultimo frame. Com 1x isso deixou
+# de acontecer. Os resolves aparecem no log com scaled=false.
+#
+# ATENCAO: no Skate 3 NAO se pode fazer isto (o renderer nativo dele classifica
+# os passes a suprimir pelo pitch da superficie, e os limiares assumem o 2x).
+# O GH3 nao tem renderer nativo, por isso aqui e seguro.
+draw_resolution_scale_x = 1
+draw_resolution_scale_y = 1
+
+# Contador de FPS no ecra: sem cabo, e a unica forma de julgar a build.
+show_fps_counter = true
+
+# ---------------------------------------------------------------------------
+# Input
+# ---------------------------------------------------------------------------
+# mnk_mode (teclado-como-comando) fica DESLIGADO: no telefone nao ha teclado, e
+# ligado ele esconde e captura o cursor. Os trastes vem do overlay de touch que
+# o SDK instancia sozinho no Android (touch_controls_overlay), que alimenta um
+# gamepad virtual SDL3 -- o driver de input normal apanha-o como comando.
+# Uma guitarra USB/Bluetooth tambem entra por aqui, sem mais nada.
+mnk_mode = false
+
+# ---------------------------------------------------------------------------
+# Cores do menu de definicoes (Escape/F1, ou o botao Back do overlay)
+# ---------------------------------------------------------------------------
+# Mesma paleta preto/branco/dourado da build de PC.
+ui_theme_accent = "D4A72C"
+ui_theme_accent_dark = "0A0A0A"
+ui_theme_interact = "C9992E"
+ui_theme_interact_hover = "F0CE5A"
+ui_theme_rail = "0A0A0AC8"
+ui_theme_rail_hover = "1F1F1FD9"
+ui_theme_desc = "0A0A0AC8"
+
+# ---------------------------------------------------------------------------
+# Logs
+# ---------------------------------------------------------------------------
+# NAO por em debug/verbose aqui.
+#
+# Ao contrario do PC, no Android o log vai para o logcat, e o nivel debug enche-o
+# com uma linha por PRESENT e varias por buffer de audio. O custo nao e teorico:
+# com log_level="debug" o jogo rebentava com SIGSEGV numa thread do guest ao fim
+# de ~80 s; em "info" passou a chegar ao ecra do titulo. E tempo gasto a
+# formatar e a escrever, roubado ao emulador do guest.
+#
+# Se for preciso cacar funcoes orfas ("Call to invalid or unregistered function
+# at guest address 0x..."), ligar o debug por pouco tempo e so para isso -- e de
+# esperar que o Android destape orfas novas, porque cada capacidade nova leva o
+# jogo a codigo nunca antes alcancado.
+#
+# Ficheiro em <armazenamento privado>/logs/; tudo sai tambem no logcat:
+#   adb logcat -s gh3recomp:V GH3DBG:V
+log_verbose = false
+log_level = "info"
+
+# present_effect / FSR ficam de fora: a build Android nao compila com o SDK da
+# AMD (o CMake do rexglue so tem o layout Windows do FidelityFX), e num GPU
+# movel o passe extra nao compensa.

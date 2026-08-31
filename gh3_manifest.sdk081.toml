@@ -1,0 +1,29 @@
+# Guitar Hero III: Legends of Rock (USA, Rev 1) - XGD2
+#
+# XEX validado a partir de extracted/default.xex:
+#   base de imagem  0x82000000     entry point  0x82136AC8
+#   title id        0x415607F7     media id     0x43048167
+#   encriptacao     1 (chave retail)
+#   compressao      1 (NENHUMA) -> sem LZX, o codegen le a imagem direta
+#
+# Sem title update: o disco nao traz default.xexp, por isso nao ha
+# patched_file_path nem par de ficheiros de hints (ao contrario do PES 2017,
+# que tinha config/pes17_functions.toml + config/pes17_tu_functions.toml).
+#
+# Sem game_root, pela mesma razao do PES e do Skate 3: so serve para derivar
+# caminhos guest de modulos DLL, que aqui nao existem, e faz o rexglue recusar
+# caminhos que resolvam fora dele.
+
+[project]
+name = "gh3"
+sdk_version = "0.8.0.0"
+
+[entrypoint]
+file_path = "../extracted/default.xex"
+out_directory_path = "generated/sdk081"
+
+# Fronteiras dos 9 alvos que a ronda 1 reportou como UnresolvedCall.
+includes = [
+  "config/gh3_functions.toml",       # curado a mao
+  "config/gh3_orphans_scan.toml",    # gerado por tools/find_orphans.py
+]

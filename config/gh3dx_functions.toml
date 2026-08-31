@@ -1,0 +1,35 @@
+# Fronteiras de funcao para o GH3 DELUXE (XEX do mod).
+#
+# NAO reutilizar as do jogo original: 40,57% dos bytes da regiao de codigo
+# diferem, e estes enderecos estao deslocados. Ex.: 0x82118F94 no original
+# corresponde a 0x82118FA4 aqui.
+#
+# Sao os 9 alvos UnresolvedCall da ronda 1. Mapeiam um a um com os do
+# original -- mesmas formas (4 thunks bctr, 2 wrappers de tail call, etc.),
+# o que confirma serem as mesmas rotinas relocalizadas.
+#
+# Obtidos com:
+#   python tools/xex_image.py ../extracted-dx/default.xex --sweep <addr>
+# O XEX do mod NAO esta encriptado, por isso a ferramenta le-o direto.
+
+[functions]
+"0x82118FA4" = { end = 0x821190C8 }  # 73 instrucoes, termina em b       0x8211905C
+"0x8232FDA8" = { end = 0x8232FDB8 }  # 4 instrucoes, termina em bctr
+"0x8232FDB8" = { end = 0x8232FDC8 }  # 4 instrucoes, termina em bctr
+"0x8232FDC8" = { end = 0x8232FDD8 }  # 4 instrucoes, termina em bctr
+"0x8232FE88" = { end = 0x8232FE98 }  # 4 instrucoes, termina em bctr
+"0x8233E850" = { end = 0x8233E868 }  # 6 instrucoes, termina em blr
+"0x8236D0D0" = { end = 0x8236D0E4 }  # 5 instrucoes, termina em b       0x82415C70
+"0x8279C110" = { end = 0x8279C118 }  # 2 instrucoes, termina em b       0x82799DD0
+"0x827A6C08" = { end = 0x827A6C10 }  # 2 instrucoes, termina em b       0x82799DD0
+
+# Ronda 2: consequencia de um truncamento por sobreposicao, tal como no jogo
+# original (la era 0x82431B1C -- aqui esta 8 bytes atras). Apanhado pelo Validate.
+"0x82431B14" = { end = 0x82431D24 }  # 132 instrucoes, tail call -> 0x824317CC
+
+# Ronda 3: orfa de RUNTIME, apanhada ao entrar numa musica.
+#   [FATAL] Call to invalid or unregistered function at guest address 0x825E9B20
+# E o MESMO endereco do jogo original (ver gh3_functions.toml, ronda 5) -- esta
+# zona nao foi relocalizada pelo mod. Chamada por ponteiro a partir do caminho
+# de gameplay, por isso o varrimento estatico nao a propoe.
+"0x825E9B20" = { end = 0x825E9B44 }  # 9 instrucoes, termina em bctr

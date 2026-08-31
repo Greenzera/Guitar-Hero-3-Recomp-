@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    android:versionCode="1"
+    android:versionName="1.0"
+    android:installLocation="auto">
+
+    <!-- OpenGL ES 2.0 (o renderer e Vulkan; isto e so o minimo que o SDL pede) -->
+    <uses-feature android:glEsVersion="0x00020000" />
+
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <!-- Comandos e guitarras: USB, Bluetooth ou gamepad -->
+    <uses-feature
+        android:name="android.hardware.bluetooth"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.gamepad"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.usb.host"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.type.pc"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Ler os dados do jogo (default.xex, DATA/) de /sdcard/gh3/game. Sao 3,9 GB
+         que nao cabem na APK e que o utilizador poe la por adb push ou por um
+         gestor de ficheiros; ficheiros arbitrarios numa pasta publica exigem o
+         "Acesso a todos os ficheiros" no Android 11+, e a permissao classica
+         antes disso. -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+
+    <application android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="true"
+        android:theme="@style/AppTheme"
+        android:enableOnBackInvokedCallback="false"
+        android:requestLegacyExternalStorage="true"
+        android:hardwareAccelerated="true" >
+
+        <!-- Entregar o botao Back a app em vez de deixar o SDL terminar a
+             activity com ele. Sem isto, um toque em Back mata o processo e o
+             progresso – e num emulador o Esc do teclado do PC esta mapeado a
+             Back, ou seja, a propria tecla que abre o menu de definicoes estaria
+             a fechar o jogo. -->
+        <meta-data android:name="SDL_ENV.SDL_ANDROID_TRAP_BACK_BUTTON" android:value="1"/>
+
+        <!-- Cvars forcados para GPU movel, injetados como variaveis de ambiente
+             pelo SDLActivity.getManifestEnvironmentVariables() antes de o
+             SDL_main correr; o rex::cvar::ApplyEnvironment() apanha REX_<NOME>.
+             Estao AQUI e nao so no toml porque a variavel de ambiente ganha ao
+             ficheiro – e o ficheiro em /sdcard/gh3 e do utilizador, pode nao
+             existir ou estar desatualizado. Manter em sincronia com
+             config/gh3.android.toml.
+
+             O par de shaders e o que torna o jogo VISIVEL: com compilacao
+             assincrona os frames desenham com pipelines de substituicao e o
+             presenter descarta-os, e num GPU movel a compilacao e lenta o
+             suficiente para que praticamente todos os frames sejam descartados
+             – ecra preto permanente com o jogo a correr por tras. Custou uma
+             sessao inteira a diagnosticar no port do Skate 3. -->
+        <meta-data android:name="SDL_ENV.REX_ASYNC_SHADER_COMPILATION" android:value="false"/>
+        <meta-data android:name="SDL_ENV.REX_VULKAN_ASYNC_SKIP_INCOMPLETE_FRAMES" android:value="false"/>
+        <meta-data android:name="SDL_ENV.REX_STORE_SHADERS" android:value="true"/>
+        <!-- Custo de GPU: filtragem anisotropica e occlusion queries nao sao
+             precisas para validar o port e sao caras num GPU de tiles. -->
+        <meta-data android:name="SDL_ENV.REX_ANISOTROPIC_OVERRIDE" android:value="1"/>
+        <meta-data android:name="SDL_ENV.REX_OCCLUSION_QUERY_ENABLE" android:value="false"/>
+        <!-- O teclado-como-comando fica desligado: no telefone nao ha teclado e
+             ligado ele captura e esconde o cursor. Os trastes vem do overlay de
+             touch, que alimenta um gamepad virtual SDL3. -->
+        <meta-data android:name="SDL_ENV.REX_MNK_MODE" android:value="false"/>
+        <!-- FPS no ecra: sem cabo, e a unica forma de julgar a build. -->
+        <meta-data android:name="SDL_ENV.REX_SHOW_FPS_COUNTER" android:value="true"/>
+
+        <activity android:name=".Gh3Activity"
+            android:label="@string/app_name"
+            android:screenOrientation="sensorLandscape"
+            android:alwaysRetainTaskState="true"
+            android:launchMode="singleInstance"
+            android:configChanges="layoutDirection|locale|grammaticalGender|fontScale|fontWeightAdjustment|orientation|uiMode|screenLayout|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
+            android:preferMinimalPostProcessing="true"
+            android:exported="true"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Guitarras e comandos USB -->
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

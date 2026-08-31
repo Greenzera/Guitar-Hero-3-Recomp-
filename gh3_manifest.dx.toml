@@ -1,0 +1,29 @@
+# Guitar Hero III DELUXE -- variante recompilada a partir do XEX do mod.
+#
+# Porque existe: o GH3 Deluxe traz um default.xex proprio. Um recomp so pode
+# correr o codigo de que nasceu, por isso o overlay de mods serve sempre o XEX
+# original e as alteracoes de CODIGO do mod ficam de fora. Esta variante refaz o
+# recomp a partir do XEX deles, para essas alteracoes valerem.
+#
+# Medido: 40,57% dos bytes da regiao de codigo diferem do original, de
+# 0x820D003E a 0x828C87D7. Nao e um remendo -- e praticamente uma recompilacao
+# do jogo. Por isso os hints do original NAO servem aqui: esta variante tem os
+# seus proprios, em config/gh3dx_*.
+#
+# Diferencas do XEX do mod para o original:
+#   entry point   0x82136AD8  (o original e 0x82136AC8, +0x10)
+#   encriptacao   0 (o original e 1) -- as ferramentas leem-no direto
+#   image base    0x82000000  e image size 0x00F20000, iguais aos do original
+
+[project]
+name = "gh3"
+sdk_version = "0.8.0.0"
+
+[entrypoint]
+file_path = "../extracted-dx/default.xex"
+out_directory_path = "generated/dx"
+
+includes = [
+  "config/gh3dx_functions.toml",       # curado a mao
+  "config/gh3dx_orphans_scan.toml",    # gerado por tools/find_orphans.py
+]

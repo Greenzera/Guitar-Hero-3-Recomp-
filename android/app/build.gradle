@@ -1,0 +1,58 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace = "com.gh3recomp"
+    compileSdkVersion 35
+    defaultConfig {
+        applicationId "com.gh3recomp"
+        // API 26: matches the ANDROID_PLATFORM the native libraries were built
+        // against, and the floor for the Vulkan / AHardwareBuffer paths.
+        minSdkVersion 26
+        targetSdkVersion 35
+        versionCode 1
+        versionName "1.0"
+        ndk {
+            // Duas ABIs numa so APK. O Android escolhe a nativa do aparelho:
+            // arm64-v8a num telemovel, x86_64 num emulador (BlueStacks, AVDs).
+            //
+            // Isto NAO e so conveniencia. Num emulador x86 a ABI arm64 corre
+            // atraves do tradutor Houdini, e o rexglue depende de apanhar
+            // SIGSEGV para as suas guardas de memoria do guest: o handler le o
+            // ucontext como ARM64, mas o kernel entrega o do x86 real, por isso
+            // a falha nunca e tratada e o processo morre. Com a .so x86_64 o
+            // handler e o processador coincidem e o problema desaparece.
+            abiFilters 'arm64-v8a', 'x86_64'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // The native runtime (librexruntimerd.so) and game (libgh3.so) are built
+    // separately by the project's CMake Android build and dropped in here; the
+    // Gradle project only packages them, it does not compile native code.
+    sourceSets.main {
+        jniLibs.srcDir 'src/main/jniLibs'
+    }
+
+    // The recompiled game library is very large; extract native libs on install
+    // so dlopen/System.loadLibrary reliably map them.
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging true
+        }
+    }
+
+    lint {
+        abortOnError = false
+    }
+}
+
+dependencies {
+}

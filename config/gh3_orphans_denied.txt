@@ -1,0 +1,21 @@
+# Enderecos que o varrimento propoe mas que NAO podem ser declarados funcao.
+# Lidos por tools/find_orphans.py --deny (um por linha, # e comentario).
+#
+# Sintoma: o codegen passa, mas o clang rebenta a compilar o codigo gerado com
+#     error: use of undeclared label 'loc_XXXXXXXX'
+# Causa: sao pontos de entrada secundarios de um bloco que tem saltos internos
+# a atravessar a fronteira. Ao declarar o ponto de entrada como funcao propria,
+# o salto de dentro do bloco fica a apontar para um rotulo que passou a viver
+# noutra funcao, e o rotulo deixa de existir no ficheiro.
+#
+# Ficam de fora ate haver solucao melhor. O rexglue tem um campo 'parent' na
+# config de funcoes (ver rexglue-sdk-090/src/codegen/config.cpp:199) que parece
+# existir exatamente para isto -- declarar uma entrada secundaria SEM a separar
+# da funcao que a contem. Por explorar; se o jogo vier a bater nalgum destes
+# enderecos, e por ai que se deve tentar, nao por reintroduzi-los aqui.
+
+0x823E9E6C
+0x824147B4
+0x82437FEC
+0x82447360
+0x82447444

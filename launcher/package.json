@@ -1,0 +1,14 @@
+{
+  "name": "gh3recomp-launcher",
+  "version": "1.0.0",
+  "description": "Launcher do Guitar Hero 3 Recomp",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "luisxl15",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "electron": "31.7.7"
+  }
+}
