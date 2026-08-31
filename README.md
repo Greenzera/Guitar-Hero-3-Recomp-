@@ -37,7 +37,9 @@ versão o jogo não arranca.
 1. Abra o `Guitar Hero 3 Recomp.exe` (ou `launcher/RODAR.bat`, a partir do
    código).
 2. Confira a linha **Instalar em** e mude a pasta se quiser — é onde vão os
-   3,4 GB do jogo.
+   3,4 GB do jogo, e com eles as pastas `DLCs`, `MODS`, os saves e os registos.
+   O executável recompilado e as DLLs ficam sempre junto do launcher; quando as
+   duas pastas são diferentes, o jogo recebe `--game_data_root`.
 3. Arraste o seu ISO para a janela, ou clique em **Escolher ISO**.
 4. O launcher lê o disco, confere a versão e mostra o que encontrou.
 5. **Instalar**, e depois **Jogar**.

@@ -22,13 +22,23 @@ const RAIZ = app.isPackaged
 // Onde ficam os 3,4 GB do jogo. Por omissao e' game/ ao lado do launcher, mas
 // o utilizador escolhe outra pasta no primeiro arranque -- por isso isto e'
 // variavel, e tudo o que depende dela recalcula-se em derivar().
-let JOGO = path.join(RAIZ, 'game');
+// Duas pastas diferentes, e confundi-las e' um erro facil de cometer:
+//
+//   RUNTIME  o executavel recompilado, as DLLs e o toml. Vem no pacote e fica
+//            sempre ao lado do launcher.
+//   JOGO     os 3,4 GB de dados do disco, mais DLCs, mods, saves e registos.
+//            E' esta que o utilizador escolhe.
+//
+// Quando as duas sao diferentes, o jogo recebe --game_data_root a apontar para
+// a segunda.
+const RUNTIME = path.join(RAIZ, 'game');
+let JOGO = RUNTIME;
 let EXE, TOML, TOML_PADRAO, DLCS, MODS, LOGS, DESLIGADAS, PAB;
 
 function derivar() {
-  EXE = path.join(JOGO, 'Guitar Hero 3 Recomp.exe');
-  TOML = path.join(JOGO, 'gh3recomp.toml');
-  TOML_PADRAO = path.join(JOGO, 'gh3recomp.default.toml');
+  EXE = path.join(RUNTIME, 'Guitar Hero 3 Recomp.exe');
+  TOML = path.join(RUNTIME, 'gh3recomp.toml');
+  TOML_PADRAO = path.join(RUNTIME, 'gh3recomp.default.toml');
   DLCS = path.join(JOGO, 'DLCs');
   MODS = path.join(JOGO, 'MODS');
   LOGS = path.join(JOGO, 'logs');
@@ -171,7 +181,7 @@ async function listarDlcs() {
 
 const RAIZES_BUILD = [BUILDS_PACOTE, BUILDS_PROJETO];
 const listarMods = () => modsmod.listarMods(MODS);
-const listarBuilds = () => modsmod.listarBuilds(EXE, JOGO, RAIZES_BUILD);
+const listarBuilds = () => modsmod.listarBuilds(EXE, RUNTIME, RAIZES_BUILD);
 
 async function escolherBuild() {
   return modsmod.escolherBuild(await listarBuilds(), await listarMods());
@@ -240,7 +250,10 @@ async function jogar() {
   // noutro sitio, por isso recebe os caminhos por argumento -- e um perfil so'
   // dele, senao as duas variantes pisavam as definicoes uma da outra.
   let args = [];
-  let pasta = JOGO;
+  let pasta = RUNTIME;
+  if (JOGO !== RUNTIME) {
+    args = ['--game_data_root', JOGO, '--user_data_root', path.join(JOGO, 'userdata')];
+  }
   if (!escolha.build.proprio) {
     const perfil = path.join(JOGO, 'userdata', escolha.build.nome);
     fs.mkdirSync(perfil, { recursive: true });
