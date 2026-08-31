@@ -14,7 +14,11 @@ const crypto = require('crypto');
 const xiso = require('./xiso.js');
 const modsmod = require('./mods.js');
 
-const RAIZ = path.resolve(__dirname, '..');
+// Empacotado, o codigo vive em resources/app e a raiz e' a pasta do executavel.
+// Em desenvolvimento, e' a pasta acima do launcher/.
+const RAIZ = app.isPackaged
+  ? path.dirname(app.getPath('exe'))
+  : path.resolve(__dirname, '..');
 const JOGO = path.join(RAIZ, 'game');
 const EXE = path.join(JOGO, 'Guitar Hero 3 Recomp.exe');
 const TOML = path.join(JOGO, 'gh3recomp.toml');
@@ -23,9 +27,12 @@ const DLCS = path.join(JOGO, 'DLCs');
 const MODS = path.join(JOGO, 'MODS');
 const LOGS = path.join(JOGO, 'logs');
 const DESLIGADAS = path.join(DLCS, 'dlc_disabled.txt');
-const FERRAMENTAS = path.join(RAIZ, 'gh3recomp', 'tools');
+// No pacote as ferramentas vao em tools/; no projeto vivem em gh3recomp/tools.
+const FERRAMENTAS = fs.existsSync(path.join(RAIZ, 'tools', 'traduzir_ptbr.py'))
+  ? path.join(RAIZ, 'tools')
+  : path.join(RAIZ, 'gh3recomp', 'tools');
 // Builds alternativos: um por cada xex de mod de codigo ja recompilado.
-const BUILDS_PACOTE = path.join(RAIZ, 'builds');
+const BUILDS_PACOTE = path.join(RAIZ, 'bin');
 const BUILDS_PROJETO = path.join(RAIZ, 'gh3recomp', 'out', 'build');
 const TRADUTOR = path.join(FERRAMENTAS, 'traduzir_ptbr.py');
 const PAB = path.join(JOGO, 'DATA', 'COMPRESSED', 'PAK', 'qb.pab.xen');

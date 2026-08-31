@@ -106,6 +106,24 @@ O codegen precisa do `default.xex` extraído do seu ISO —
 
 Para o build da variante Deluxe, `build-081-dx.bat`.
 
+### Empacotar o launcher
+
+```bash
+cd launcher
+npm install
+npm run empacotar
+```
+
+Sai uma pasta em `dist/` com o executável e tudo o que ele precisa: o runtime
+do Electron, o jogo recompilado em `game/`, os builds de variante em `bin/`, e
+as ferramentas da tradução em `tools/`. Nada de rede nem de electron-builder —
+o Electron já está em `node_modules` e empacotar é copiá-lo e renomear.
+
+O `default.xex` **não** vai no pacote, e não faz falta: o do jogo base sai do
+seu ISO durante a instalação, e o do GH3 Deluxe vem dentro do próprio mod — a
+camada de mods põe-no por cima na altura de correr, que é justamente porque o
+mod o traz na raiz da pasta dele.
+
 ### Android
 
 Corre o mesmo C++ gerado (`simde` vira NEON no ARM), por isso não há codegen

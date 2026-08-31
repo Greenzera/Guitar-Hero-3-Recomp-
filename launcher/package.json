@@ -4,11 +4,13 @@
   "description": "Launcher do Guitar Hero 3 Recomp",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "empacotar": "node empacotar.js"
   },
   "author": "luisxl15",
   "license": "UNLICENSED",
   "devDependencies": {
-    "electron": "31.7.7"
+    "electron": "31.7.7",
+    "rcedit": "^5.0.2"
   }
 }
