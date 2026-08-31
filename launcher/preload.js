@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld('gh3', {
   traducao: (instalar) => ipcRenderer.invoke('traducao', instalar),
   dlc: (nome, ativa) => ipcRenderer.invoke('dlc', nome, ativa),
   mod: (nome, ativo) => ipcRenderer.invoke('mod', nome, ativo),
+  importarMod: (caminho) => ipcRenderer.invoke('importar-mod', caminho),
   config: (chave, valor) => ipcRenderer.invoke('config', chave, valor),
   abrir: (qual) => ipcRenderer.invoke('abrir', qual),
   abrirLog: () => ipcRenderer.invoke('abrir-log'),

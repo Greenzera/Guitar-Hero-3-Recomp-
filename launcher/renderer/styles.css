@@ -520,3 +520,5 @@ body {
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   direction: rtl; text-align: center;
 }
+
+.cartao h2 span { display: flex; gap: 14px; }

@@ -13,6 +13,7 @@ const fs = require('fs');
 const fsp = require('fs/promises');
 const path = require('path');
 const crypto = require('crypto');
+const { execFile } = require('child_process');
 
 async function existe(p) {
   try {
@@ -122,4 +123,43 @@ async function ligarMod(pastaMods, nome, ativo) {
   }
 }
 
-module.exports = { listarMods, listarBuilds, escolherBuild, ligarMod, sha256 };
+// Traz um mod de fora para a pasta de mods. Aceita uma pasta ou um .zip; o zip
+// e' aberto com o tar do Windows, que existe desde o Windows 10 e poupa uma
+// dependencia so' para isto.
+async function importarMod(pastaMods, origem) {
+  const st = await fsp.stat(origem);
+  const base = path.basename(origem).replace(/\.zip$/i, '');
+  let destino = path.join(pastaMods, base);
+  let n = 2;
+  while (await existe(destino)) destino = path.join(pastaMods, base + ' (' + n++ + ')');
+
+  if (st.isDirectory()) {
+    await fsp.cp(origem, destino, { recursive: true });
+  } else {
+    await fsp.mkdir(destino, { recursive: true });
+    await new Promise((ok, falha) => {
+      execFile('tar', ['-xf', origem, '-C', destino], (e) =>
+        e ? falha(new Error('Nao consegui abrir o zip: ' + e.message)) : ok());
+    });
+    // se o zip trazia tudo dentro de uma pasta, sobe-se um nivel
+    const dentro = await fsp.readdir(destino, { withFileTypes: true });
+    if (dentro.length === 1 && dentro[0].isDirectory()) {
+      const meio = path.join(destino, dentro[0].name);
+      for (const e of await fsp.readdir(meio)) {
+        await fsp.rename(path.join(meio, e), path.join(destino, e));
+      }
+      await fsp.rmdir(meio);
+    }
+  }
+
+  // Um mod tem de trazer alguma coisa que o jogo reconheca.
+  const temXex = await existe(path.join(destino, 'default.xex'));
+  const temDados = await existe(path.join(destino, 'DATA'));
+  if (!temXex && !temDados) {
+    await fsp.rm(destino, { recursive: true, force: true });
+    throw new Error('Isso nao parece um mod: nao tem default.xex nem uma pasta DATA.');
+  }
+  return { nome: path.basename(destino), codigo: temXex };
+}
+
+module.exports = { listarMods, listarBuilds, escolherBuild, ligarMod, importarMod, sha256 };

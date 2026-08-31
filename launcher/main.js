@@ -352,6 +352,25 @@ ipcMain.handle('mod', async (_e, nome, ativo) => {
   await modsmod.ligarMod(MODS, nome, ativo);
   return listarMods();
 });
+ipcMain.handle('importar-mod', async (_e, caminho) => {
+  try {
+    let origem = caminho;
+    if (!origem) {
+      const r = await dialog.showOpenDialog(janela, {
+        title: 'Escolha a pasta do mod, ou o .zip dele',
+        properties: ['openFile', 'openDirectory'],
+        filters: [{ name: 'Mod', extensions: ['zip'] }],
+      });
+      if (r.canceled) return { ok: false, cancelado: true };
+      origem = r.filePaths[0];
+    }
+    const info = await modsmod.importarMod(MODS, origem);
+    return { ok: true, ...info, mods: await listarMods() };
+  } catch (e) {
+    return { ok: false, erro: e.message };
+  }
+});
+
 ipcMain.handle('config', async (_e, chave, valor) => {
   await gravarToml(chave, valor);
   return (await estado()).config;

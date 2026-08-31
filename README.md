@@ -51,7 +51,11 @@ O launcher é um app Electron e trata de tudo o resto:
 | **Idioma** | liga e desliga a tradução para português do Brasil |
 | **Vídeo** | Direct3D 12 ou Vulkan, tela cheia, VSync, contador de FPS |
 | **DLCs** | liga e desliga cada pacote em `game/DLCs` |
-| **Mods** | liga e desliga cada mod, e **escolhe o executável certo** (ver abaixo) |
+| **Mods** | importa, liga e desliga cada mod, e **escolhe o executável certo** (ver abaixo) |
+
+Para pôr um mod, use **Importar…** no cartão de Mods e aponte a pasta dele ou o
+`.zip`. O launcher confirma que aquilo é mesmo um mod (tem `default.xex` ou uma
+pasta `DATA`), põe-no em `game/MODS`, e diz se ele altera o executável.
 
 ### Mods que alteram o executável
 
@@ -118,6 +122,15 @@ Sai uma pasta em `dist/` com o executável e tudo o que ele precisa: o runtime
 do Electron, o jogo recompilado em `game/`, os builds de variante em `bin/`, e
 as ferramentas da tradução em `tools/`. Nada de rede nem de electron-builder —
 o Electron já está em `node_modules` e empacotar é copiá-lo e renomear.
+
+Para um instalador de ficheiro único:
+
+```bash
+npm run instalador
+```
+
+Sai um `.exe` auto-extraível: quem o abre escolhe a pasta, e no fim o launcher
+arranca sozinho.
 
 O `default.xex` **não** vai no pacote, e não faz falta: o do jogo base sai do
 seu ISO durante a instalação, e o do GH3 Deluxe vem dentro do próprio mod — a

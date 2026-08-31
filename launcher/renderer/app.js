@@ -181,6 +181,19 @@ $$('[data-abrir]').forEach((b) =>
   b.addEventListener('click', () => window.gh3.abrir(b.dataset.abrir))
 );
 
+$('#btn-importar-mod').addEventListener('click', async () => {
+  const r = await window.gh3.importarMod();
+  if (r.cancelado) return;
+  if (!r.ok) {
+    brinde('Nao deu: ' + r.erro);
+    return;
+  }
+  estado.mods = r.mods;
+  desenharMods();
+  desenharMarcadores();
+  brinde(`${r.nome} importado${r.codigo ? ' (altera o executavel)' : ''}. Ligue-o na lista.`);
+});
+
 $('#btn-log').addEventListener('click', async () => {
   const r = await window.gh3.abrirLog();
   if (!r.ok) brinde('Ainda não há nenhum log — o jogo nunca foi aberto.');
