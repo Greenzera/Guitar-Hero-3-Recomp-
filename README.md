@@ -2,7 +2,7 @@
 
 Recompilação estática de **Guitar Hero III: Legends of Rock** (Xbox 360) para
 PC e Android. O código PowerPC do jogo é traduzido para C++ nativo e compilado
-para a máquina anfitriã — não é emulação de CPU.
+para x86__64 — não é emulação de CPU.
 
 Feito com [rexglue](https://github.com/hedge-dev/XenonRecomp) (fork ReXGlue) e
 com um launcher próprio que instala o jogo a partir do seu disco.
