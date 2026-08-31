@@ -147,7 +147,7 @@ separado. Estado: jogável, com os vídeos Bink a saírem pretos. Ver
 ## Estrutura
 
 ```
-src/            código do projeto (app, hooks, frame gen, renderer)
+src/            código do projeto (app, hooks, renderer)
 config/         manifests do codegen e listas de funções
 tools/          ferramentas Python (extração de ISO, tradução, análise)
   extract_xiso.py     lê ISOs XDVDFS e extrai ficheiros
@@ -157,9 +157,7 @@ tools/          ferramentas Python (extração de ISO, tradução, análise)
 launcher/       o launcher/instalador em Electron
   xiso.js             leitor XDVDFS em Node, com verificação de versão
   mods.js             mods e escolha de executável por hash do XEX
-launcher-ps1/   o launcher antigo em PowerShell (referência histórica)
 android/        projeto Android (fontes; os .so são compilados)
-third_party/    lsfg-framegen (MIT, lsfg-vk)
 docs/           notas técnicas sobre os formatos do jogo
 ```
 
@@ -184,7 +182,6 @@ quickplay; DLC oficial em STFS; tradução PT-BR; Android jogável.
 
 - **rexglue / ReXGlue SDK** — o recompilador e a camada de runtime
 - **Xenia** — de onde vem boa parte do conhecimento sobre o hardware do 360
-- **lsfg-vk** — geração de frames (MIT, em `third_party/`)
 - **Neversoft / Activision** — o jogo
 
 Licença do código deste repositório: [MIT](LICENSE).
