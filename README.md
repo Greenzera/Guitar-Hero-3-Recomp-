@@ -7,6 +7,8 @@ para a máquina anfitriã — não é emulação de CPU.
 Feito com [rexglue](https://github.com/hedge-dev/XenonRecomp) (fork ReXGlue) e
 com um launcher próprio que instala o jogo a partir do seu disco.
 
+![O launcher](docs/img/launcher.png)
+
 ---
 
 ## Isto não inclui o jogo
@@ -37,6 +39,10 @@ versão o jogo não arranca.
 3. O launcher lê o disco, confere a versão e mostra o que encontrou.
 4. **Instalar** — são cerca de 3,4 GB.
 5. **Jogar**.
+
+| Sem o jogo instalado | Durante a instalação |
+|---|---|
+| ![Instalador](docs/img/instalador.png) | ![Progresso](docs/img/progresso.png) |
 
 O launcher é um app Electron e trata de tudo o resto:
 
